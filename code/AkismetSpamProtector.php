@@ -63,6 +63,10 @@ class AkismetSpamProtector implements SpamProtector
      * @var string
      */
     protected static $_api_key = null;
+
+    public function __construct($options = array())
+    {
+    }
     
     /**
      * Set the API key
