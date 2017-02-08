@@ -1,0 +1,5 @@
+fi:
+  AkismetField:
+    NOTIFICATION: 'Ymmärrän ja hyväksyn, että luomani sisältö lähetetään kolmannelle osapuolelle spämminsuodatusta varten'
+    NOTIFICATIONREQUIRED: 'Sinun täytyy hyväksyä sisällön lähettäminen spämminsuodatuspalveluun'
+    SPAM: 'Lähettämäsi sisältö on hylätty koska se tulkittiin spämmiksi.'
