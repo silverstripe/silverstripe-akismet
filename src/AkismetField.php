@@ -2,7 +2,6 @@
 
 namespace SilverStripe\Akismet;
 
-use SilverStripe\Control\Controller;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\Validator;
@@ -90,14 +89,12 @@ class AkismetField extends FormField
     }
     
     /**
-     * This function first gets values from mapped fields and then check these values against
-     * Mollom web service and then notify callback object with the spam checking result.
+     * This function first gets values from mapped fields and then checks these values against
+     * akismet and then notifies callback object with the spam checking result.
      * @param Validator $validator
-     * @return  boolean     - true when Mollom confirms that the submission is ham (not spam)
-     *                      - false when Mollom confirms that the submission is spam
-     *                      - false when Mollom say 'unsure'.
-     *                        In this case, 'mollom_captcha_requested' session is set to true
-     *                        so that Field() knows it's time to display captcha
+     * @return  boolean     - True when akismet confirms that the submission is ham (not spam) or should be saved
+     *                      - False when akismet confirms that the submission is spam or permission was not given to
+     *                        check for spam
      */
     public function validate($validator)
     {
@@ -140,7 +137,6 @@ class AkismetField extends FormField
             $formName = $this->getForm()->FormName();
 
             $this->getForm()->sessionMessage($errorMessage, ValidationResult::TYPE_GOOD);
-//            Controller::curr()->getRequest()->getSession()->set("FormInfo.{$formName}.errors", $errors);
 
             return true;
         } else {
@@ -216,7 +212,7 @@ class AkismetField extends FormField
     /**
      * Allow spam flag to be saved to the underlying data record
      *
-     * @param \DataObjectInterface $record
+     * @param DataObjectInterface $record
      */
     public function saveInto(DataObjectInterface $record)
     {

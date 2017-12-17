@@ -2,7 +2,6 @@
 
 namespace SilverStripe\Akismet\Tests;
 
-use Exception;
 use SilverStripe\Akismet\AkismetSpamProtector;
 use SilverStripe\Akismet\Config\AkismetConfig;
 use SilverStripe\Core\Injector\Injector;
@@ -31,12 +30,9 @@ class AkismetTest extends FunctionalTest
     protected function setUp()
     {
         parent::setUp();
-//        Injector::nest();
-//        Injector::inst()->unregisterAllObjects();
         Injector::inst()->unregisterObjects(AkismetService::class);
 
         // Mock service
-//        Config::nest();
         Config::modify()->set(Injector::class, AkismetService::class, AkismetTestService::class);
         Config::modify()->set(AkismetSpamProtector::class, 'api_key', 'dummykey');
         AkismetSpamProtector::set_api_key(null);
@@ -47,13 +43,6 @@ class AkismetTest extends FunctionalTest
         Config::modify()->remove(AkismetSpamProtector::class, 'bypass_members');
         Config::modify()->set(AkismetSpamProtector::class, 'bypass_permission', 'ADMIN');
     }
-
-//    public function tearDown()
-//    {
-//        Config::unnest();
-//        Injector::unnest();
-//        parent::tearDown();
-//    }
 
     public function testSpamDetectionForm()
     {
@@ -145,7 +134,7 @@ class AkismetTest extends FunctionalTest
         $siteconfig->write();
 
         // Test assignment via request filter
-        $processor = new AkismetTestTestProcessor();
+        $processor = new AkismetTestTestMiddleware();
         $this->assertTrue($processor->publicIsDBReady());
 
         // Remove AkismetKey field

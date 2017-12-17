@@ -3,25 +3,26 @@
 namespace SilverStripe\Akismet\Config;
 
 use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Control\HTTPResponse;
+use SilverStripe\Control\Middleware\HTTPMiddleware;
 use SilverStripe\ORM\DataObjectSchema;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\Akismet\AkismetSpamProtector;
 use SilverStripe\ORM\DB;
 use SilverStripe\ORM\DataObject;
-use SilverStripe\Control\RequestFilter;
 use SilverStripe\Security\Security;
 
 /**
  * Allows akismet to be configured via siteconfig instead of hard-coded configuration
  */
-class AkismetProcessor implements RequestFilter
+class AkismetMiddleware implements HTTPMiddleware
 {
-    public function postRequest(HTTPRequest $request, HTTPResponse $response)
+    public function process(HTTPRequest $request, callable $delegate)
     {
+        $this->registerAkismetSpamProtector();
+        return $delegate($request);
     }
 
-    public function preRequest(HTTPRequest $request)
+    protected function registerAkismetSpamProtector()
     {
         // Skip if database isn't ready
         if (!$this->isDBReady()) {

@@ -64,14 +64,7 @@ class AkismetSpamProtector implements SpamProtector
      * @var array
      */
     private $fieldMapping = array();
-    
-    /**
-     * Overridden API key
-     *
-     * @var string
-     */
-    protected static $_api_key = null;
-    
+
     /**
      * Set the API key
      *
@@ -79,7 +72,7 @@ class AkismetSpamProtector implements SpamProtector
      */
     public static function set_api_key($key)
     {
-        self::$_api_key = $key;
+        self::$api_key = $key;
     }
     
     /**
@@ -89,8 +82,8 @@ class AkismetSpamProtector implements SpamProtector
      */
     protected static function get_api_key()
     {
-        if (self::$_api_key) {
-            return self::$_api_key;
+        if (self::$api_key) {
+            return self::$api_key;
         }
         
         // Check config

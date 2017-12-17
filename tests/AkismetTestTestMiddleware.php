@@ -2,10 +2,10 @@
 
 namespace SilverStripe\Akismet\Tests;
 
-use SilverStripe\Akismet\Config\AkismetProcessor;
+use SilverStripe\Akismet\Config\AkismetMiddleware;
 use SilverStripe\Dev\TestOnly;
 
-class AkismetTestTestProcessor extends AkismetProcessor implements TestOnly
+class AkismetTestTestMiddleware extends AkismetMiddleware implements TestOnly
 {
     public function publicIsDBReady()
     {
