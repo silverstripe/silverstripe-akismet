@@ -82,10 +82,6 @@ class AkismetSpamProtector implements SpamProtector
      */
     protected static function get_api_key()
     {
-        if (self::$api_key) {
-            return self::$api_key;
-        }
-        
         // Check config
         $key = Config::inst()->get(AkismetSpamProtector::class, 'api_key');
         if (!empty($key)) {
