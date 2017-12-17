@@ -1,5 +1,17 @@
 <?php
 
+namespace SilverStripe\Akismet;
+
+use SilverStripe\Control\Controller;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Forms\CheckboxField;
+use SilverStripe\Forms\Validator;
+use SilverStripe\ORM\ValidationResult;
+use SilverStripe\Security\Permission;
+use SilverStripe\ORM\DataObjectInterface;
+use SilverStripe\Forms\FormField;
+use SilverStripe\Security\Security;
+
 /**
  * Form field to handle akismet error display and handling
  *
@@ -27,7 +39,7 @@ class AkismetField extends FormField
     protected function confirmationField()
     {
         // Check if confirmation is required
-        $requireConfirmation = Config::inst()->get('AkismetSpamProtector', 'require_confirmation');
+        $requireConfirmation = Config::inst()->get(AkismetSpamProtector::class, 'require_confirmation');
         if (empty($requireConfirmation)) {
             return null;
         }
@@ -91,12 +103,12 @@ class AkismetField extends FormField
     {
         
         // Check that, if necessary, the user has given permission to check for spam
-        $requireConfirmation = Config::inst()->get('AkismetSpamProtector', 'require_confirmation');
+        $requireConfirmation = Config::inst()->get(AkismetSpamProtector::class, 'require_confirmation');
         if ($requireConfirmation && !$this->Value()) {
             $validator->validationError(
                 $this->name,
                 _t(
-                    'AkismetField.NOTIFICATIONREQUIRED',
+                    __CLASS__ . '.NOTIFICATIONREQUIRED',
                     'You must give consent to submit this content to spam detection'
                 ),
                 "error"
@@ -112,12 +124,12 @@ class AkismetField extends FormField
 
         // Save error message
         $errorMessage = _t(
-            'AkismetField.SPAM',
+            __CLASS__ . '.SPAM',
             "Your submission has been rejected because it was treated as spam."
         );
 
         // If spam should be allowed, let it pass and save it for later
-        if (Config::inst()->get('AkismetSpamProtector', 'save_spam')) {
+        if (Config::inst()->get(AkismetSpamProtector::class, 'save_spam')) {
             // In order to save spam but still display the spam message, we must mock a form message
             // without failing the validation
             $errors = array(array(
@@ -126,7 +138,10 @@ class AkismetField extends FormField
                 'messageType' => 'error',
             ));
             $formName = $this->getForm()->FormName();
-            Session::set("FormInfo.{$formName}.errors", $errors);
+
+            $this->getForm()->sessionMessage($errorMessage, ValidationResult::TYPE_GOOD);
+//            Controller::curr()->getRequest()->getSession()->set("FormInfo.{$formName}.errors", $errors);
+
             return true;
         } else {
             // Mark as spam
@@ -148,14 +163,14 @@ class AkismetField extends FormField
         }
 
         // Check bypass permission
-        $permission = Config::inst()->get('AkismetSpamProtector', 'bypass_permission');
+        $permission = Config::inst()->get(AkismetSpamProtector::class, 'bypass_permission');
         if ($permission && Permission::check($permission)) {
             return false;
         }
 
         // if the user has logged and there's no force check on member
-        $bypassMember = Config::inst()->get('AkismetSpamProtector', 'bypass_members');
-        if ($bypassMember && Member::currentUser()) {
+        $bypassMember = Config::inst()->get(AkismetSpamProtector::class, 'bypass_members');
+        if ($bypassMember && Security::getCurrentUser()) {
             return false;
         }
 
@@ -203,9 +218,9 @@ class AkismetField extends FormField
      *
      * @param \DataObjectInterface $record
      */
-    public function saveInto(\DataObjectInterface $record)
+    public function saveInto(DataObjectInterface $record)
     {
-        if (Config::inst()->get('AkismetSpamProtector', 'save_spam')) {
+        if (Config::inst()->get(AkismetSpamProtector::class, 'save_spam')) {
             $dataValue = $this->getIsSpam() ? 1 : 0;
             $record->setCastedField($this->name, $dataValue);
         }

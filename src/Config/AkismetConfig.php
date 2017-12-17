@@ -1,5 +1,11 @@
 <?php
 
+namespace SilverStripe\Akismet\Config;
+
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\PasswordField;
+use SilverStripe\ORM\DataExtension;
+
 /**
  * Extends {@see SiteConfig} to allow akismet key to be set via the CMS
  */

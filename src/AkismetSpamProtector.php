@@ -1,5 +1,13 @@
 <?php
 
+namespace SilverStripe\Akismet;
+
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Control\Director;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\SpamProtection\SpamProtector;
+use SilverStripe\Akismet\Service\AkismetService;
+
 /**
  * Spam protector for Akismet
  *
@@ -86,7 +94,7 @@ class AkismetSpamProtector implements SpamProtector
         }
         
         // Check config
-        $key = Config::inst()->get('AkismetSpamProtector', 'api_key');
+        $key = Config::inst()->get(AkismetSpamProtector::class, 'api_key');
         if (!empty($key)) {
             return $key;
         }
@@ -113,7 +121,7 @@ class AkismetSpamProtector implements SpamProtector
         $url = Director::protocolAndHost();
         
         // Generate API object
-        return Injector::inst()->get('AkismetService', true, array($key, $url));
+        return Injector::inst()->get(AkismetService::class, false, array($key, $url));
     }
     
     public function getFormField($name = null, $title = null, $value = null, $form = null, $rightTitle = null)
