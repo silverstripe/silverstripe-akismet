@@ -16,27 +16,24 @@ Please see [the changelog](changelog.md) for module history.
 
 ## Requirements
 
- * SilverStripe 3.1
+ * SilverStripe 4.0+
  * Silverstripe SpamProtection module - <https://github.com/silverstripe/silverstripe-spamprotection>
  * Tijs Verkoyen's Akismet API wrapper - <https://github.com/tijsverkoyen/Akismet>
- * PHP 5.3
+ * PHP 5.6 or higher
+
+ **Note:** For a SilverStripe 3.x compatible version, please use [the 1.x release line](https://github.com/silverstripe/silverstripe-mimevalidator/tree/1.0).
 
 ## Installation Instructions
 
 This module can be easily installed on any already-developed website
 
- * If using composer installation can be done as below
+ * You can install using Composer, as below:
 
 ```bash
-composer require tractorcow/silverstripe-akismet 3.1.x-dev
+composer require silverstripe/akismet ^4.0
 ```
 
 `AkismetSpamProtector` is automatically assigned as the default spam protector class.
-
- * If not using composer you'll need to download the 
-[akismet module](https://github.com/tractorcow/silverstripe-akismet/releases/tag/3.1.0), 
-[spam protector](https://github.com/silverstripe/silverstripe-spamprotection/releases/tag/1.2.0),
-and [akismet](https://github.com/tijsverkoyen/Akismet/releases/tag/1.1.0)
 
  * Get an API key from [akismet.com](http://akismet.com/) and set in the site against one of the following ways.
 
@@ -46,20 +43,22 @@ config.yml:
 ---
 Name: myspamprotection
 ---
-AkismetSpamProtector:
+SilverStripe\Akismet\AkismetSpamProtector:
   api_key: 5555dddd55d5d
 ```
 
 _config.php:
 
 ```php
+use SilverStripe\Akismet\AkismetSpamProtector;
+
 AkismetSpamProtector::set_api_key('5555dddd55d5d');
 ```
 
-_ss_environment.php:
+.env:
 
 ```
-define('SS_AKISMET_API_KEY', '5555dddd55d5d');
+SS_AKISMET_API_KEY="5555dddd55d5d"
 ```
 
 If instead you want to configure your akismet key via the siteconfig (as a password field) you can
@@ -68,9 +67,9 @@ add the included extension to SiteConfig
 mysite/_config/settings.yml:
 
 ```yaml
-SiteConfig:
+SilverStripe\SiteConfig\SiteConfig:
   extensions:
-    - AkismetConfig
+    - SilverStripe\Akismet\Config\AkismetConfig
 ```
 
 ## Testing
@@ -80,9 +79,13 @@ spam protection for all logged in users. In order to disable this for testing pu
 modify these options in your development environment as below:
 
 ```php
-if(!Director::isLive()) {
-	Config::inst()->remove('AkismetSpamProtector', 'bypass_permission');
-	Config::inst()->remove('AkismetSpamProtector', 'bypass_members');
+use SilverStripe\Akismet\AkismetSpamProtector;
+use SilverStripe\Control\Director;
+use SilverStripe\Core\Config\Config;
+
+if (!Director::isLive()) {
+	Config::modify()->remove(AkismetSpamProtector::class, 'bypass_permission');
+	Config::modify()->remove(AkismetSpamProtector::class, 'bypass_members');
 }
 ```
 
@@ -97,15 +100,9 @@ extension to the `CommentingController`
 config.yml
 
 ```yml
-CommentingController:
+SilverStripe\Comments\Controllers\CommentingController:
   extensions:
     - CommentSpamProtection
-```
-
-_config.php
-
-```php
-CommentingController::add_extension('CommentSpamProtection');
 ```
 
 If necessary, you can also mark spam comments to be saved to the database. This will still display the spam rejection
@@ -117,7 +114,7 @@ config.yml
 
 ```yaml
 # Allows spam posts to be saved for review if necessary
-AkismetSpamProtector:
+SilverStripe\Akismet\AkismetSpamProtector:
   save_spam: true
 ```
 
@@ -147,43 +144,13 @@ To create a checkbox style authorisation prompt for this field set the following
 config.yml
 
 ```yml
-AkismetSpamProtector:
+SilverStripe\Akismet\AkismetSpamProtector:
   require_confirmation: true
 ```
 
 _config.php
 
 ```php
-Config::inst()->update('AkismetSpamProtector', 'require_confirmation', true);
+Config::modify()->set(AkismetSpamProtector::class, 'require_confirmation', true);
 ```
 
-## License
-
-Revised BSD License
-
-Copyright (c) 2013, Damian Mooyman
-All rights reserved.
-
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
- * Redistributions of source code must retain the above copyright
-   notice, this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright
-   notice, this list of conditions and the following disclaimer in the
-   documentation and/or other materials provided with the distribution.
- * The name of Damian Mooyman may not be used to endorse or promote products
-   derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.

@@ -1,3 +1,5 @@
+Revised BSD License
+
 Copyright (c) 2016, Damian Mooyman
 All rights reserved.
 

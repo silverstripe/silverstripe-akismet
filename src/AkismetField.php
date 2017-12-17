@@ -21,7 +21,7 @@ class AkismetField extends FormField
     
     /**
      * Get the nested confirmation checkbox field
-     * 
+     *
      * @return CheckboxField
      */
     protected function confirmationField()
@@ -81,11 +81,11 @@ class AkismetField extends FormField
      * This function first gets values from mapped fields and then check these values against
      * Mollom web service and then notify callback object with the spam checking result.
      * @param Validator $validator
-     * @return 	boolean		- true when Mollom confirms that the submission is ham (not spam)
-     *						- false when Mollom confirms that the submission is spam 
-     * 						- false when Mollom say 'unsure'. 
-     *						  In this case, 'mollom_captcha_requested' session is set to true 
-     *       				  so that Field() knows it's time to display captcha 			
+     * @return  boolean     - true when Mollom confirms that the submission is ham (not spam)
+     *                      - false when Mollom confirms that the submission is spam
+     *                      - false when Mollom say 'unsure'.
+     *                        In this case, 'mollom_captcha_requested' session is set to true
+     *                        so that Field() knows it's time to display captcha
      */
     public function validate($validator)
     {

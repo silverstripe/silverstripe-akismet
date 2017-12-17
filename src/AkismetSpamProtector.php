@@ -10,7 +10,7 @@ class AkismetSpamProtector implements SpamProtector
 {
     /**
      * Set this to your API key
-     * 
+     *
      * @var string
      * @config
      */
@@ -66,7 +66,7 @@ class AkismetSpamProtector implements SpamProtector
     
     /**
      * Set the API key
-     * 
+     *
      * @param string $key
      */
     public static function set_api_key($key)
@@ -76,7 +76,7 @@ class AkismetSpamProtector implements SpamProtector
     
     /**
      * Get the API key
-     * 
+     *
      * @return string
      */
     protected static function get_api_key()
@@ -99,7 +99,7 @@ class AkismetSpamProtector implements SpamProtector
     
     /**
      * Retrieves Akismet API object singleton, or null if not configured
-     * 
+     *
      * @return AkismetService
      */
     public static function api()
