@@ -47,12 +47,12 @@ SilverStripe\Akismet\AkismetSpamProtector:
   api_key: 5555dddd55d5d
 ```
 
-_config.php:
+\_config.php:
 
 ```php
 use SilverStripe\Akismet\AkismetSpamProtector;
 
-AkismetSpamProtector::set_api_key('5555dddd55d5d');
+AkismetSpamProtector::singleton()->setApiKey('5555dddd55d5d');
 ```
 
 .env:
@@ -71,6 +71,15 @@ SilverStripe\SiteConfig\SiteConfig:
   extensions:
     - SilverStripe\Akismet\Config\AkismetConfig
 ```
+
+### Priority of defined API keys
+
+Please note that the API key values defined in the various ways above will be prioritised as:
+
+1. Values assigned to the singleton via `AkismetSpamProtector::singleton()->setApiKey()`
+2. Values defined in configuration, whether YAML or in \_config.php files with `Config::modify()->set(...)`
+3. Values defined in the environment via .env
+
 
 ## Testing
 

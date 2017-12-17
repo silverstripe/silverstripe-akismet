@@ -2,6 +2,7 @@
 
 namespace SilverStripe\Akismet;
 
+use SilverStripe\Akismet\Service\AkismetService;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\Validator;
@@ -178,7 +179,8 @@ class AkismetField extends FormField
         $url = isset($mappedData['authorUrl']) ? $mappedData['authorUrl'] : null;
 
         // Check result
-        $api = AkismetSpamProtector::api();
+        /** @var AkismetService $api */
+        $api = AkismetSpamProtector::singleton()->getService();
         $this->isSpam = $api && $api->isSpam($content, $author, $email, $url);
         return $this->isSpam;
     }

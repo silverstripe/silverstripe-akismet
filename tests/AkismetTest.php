@@ -35,7 +35,6 @@ class AkismetTest extends FunctionalTest
         // Mock service
         Config::modify()->set(Injector::class, AkismetService::class, AkismetTestService::class);
         Config::modify()->set(AkismetSpamProtector::class, 'api_key', 'dummykey');
-        AkismetSpamProtector::set_api_key(null);
 
         // Reset options to reasonable default
         Config::modify()->remove(AkismetSpamProtector::class, 'save_spam');

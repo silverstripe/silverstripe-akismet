@@ -37,7 +37,7 @@ class AkismetMiddleware implements HTTPMiddleware
         // Check if key exists
         $akismetKey = SiteConfig::current_site_config()->AkismetKey;
         if ($akismetKey) {
-            AkismetSpamProtector::set_api_key($akismetKey);
+            AkismetSpamProtector::singleton()->setApiKey($akismetKey);
         }
     }
 
