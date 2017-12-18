@@ -1,6 +1,8 @@
 # Akismet Silverstripe Module
 
-[![Build Status](https://secure.travis-ci.org/silverstripe/silverstripe-akismet.png?branch=master)](http://travis-ci.org/silverstripe/silverstripe-akismet)
+[![Build Status](https://travis-ci.org/silverstripe/silverstripe-akismet.svg?branch=master)](https://travis-ci.org/silverstripe/silverstripe-akismet)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/silverstripe/silverstripe-akismet/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/silverstripe/silverstripe-akismet/?branch=master)
+[![codecov](https://codecov.io/gh/silverstripe/silverstripe-akismet/branch/master/graph/badge.svg)](https://codecov.io/gh/silverstripe/silverstripe-akismet)
 
 Simple spam filter for Silverstripe using Akismet
 

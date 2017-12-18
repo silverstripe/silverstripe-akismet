@@ -1,5 +1,5 @@
 eo:
-  AkismetField:
+  SilverStripe\Akismet\AkismetField:
     NOTIFICATION: 'Mi komprenas ke, kaj konsentas ke, ĉi tiu enhavo sendiĝos al tria partio por spamfiltrado.'
     NOTIFICATIONREQUIRED: 'Necesas ke vi konsentu ke ĉi tiu enhavo sendiĝu al spamfiltrado.'
     SPAM: 'Via sendaĵo estas malakceptita ĉar ni traktas ĝin kiel spamon.'
