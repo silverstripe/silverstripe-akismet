@@ -1,5 +1,15 @@
 <?php
 
+namespace SilverStripe\Akismet;
+
+use SilverStripe\Akismet\Service\AkismetService;
+use SilverStripe\Control\Director;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Environment;
+use SilverStripe\Core\Injector\Injectable;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\SpamProtection\SpamProtector;
+
 /**
  * Spam protector for Akismet
  *
@@ -8,13 +18,22 @@
  */
 class AkismetSpamProtector implements SpamProtector
 {
+    use Injectable;
+
     /**
      * Set this to your API key
-     * 
+     *
      * @var string
      * @config
      */
-    private static $api_key = null;
+    private static $api_key = '';
+
+    /**
+     * The API key that will be used for the service. Can be set on the singleton to take priority over configuration.
+     *
+     * @var string
+     */
+    protected $apiKey = '';
 
     /**
      * Permission required to bypass check
@@ -56,56 +75,55 @@ class AkismetSpamProtector implements SpamProtector
      * @var array
      */
     private $fieldMapping = array();
-    
-    /**
-     * Overridden API key
-     *
-     * @var string
-     */
-    protected static $_api_key = null;
-    
+
     /**
      * Set the API key
-     * 
+     *
      * @param string $key
+     * @return $this
      */
-    public static function set_api_key($key)
+    public function setApiKey($key)
     {
-        self::$_api_key = $key;
+        $this->apiKey = $key;
+        return $this;
     }
     
     /**
-     * Get the API key
-     * 
+     * Get the API key. Priority is given first to explicitly set values on a singleton, then to configuration values
+     * and finally to environment values.
+     *
      * @return string
      */
-    protected static function get_api_key()
+    public function getApiKey()
     {
-        if (self::$_api_key) {
-            return self::$_api_key;
+        // Priority given to explicitly set API keys on the singleton object
+        if ($this->apiKey) {
+            return $this->apiKey;
         }
-        
-        // Check config
-        $key = Config::inst()->get('AkismetSpamProtector', 'api_key');
+
+        // Check config for a value defined in YAML or _config.php
+        $key = Config::inst()->get(AkismetSpamProtector::class, 'api_key');
         if (!empty($key)) {
             return $key;
         }
         
-        // Check environment
-        if (defined('SS_AKISMET_API_KEY')) {
-            return SS_AKISMET_API_KEY;
+        // Check environment as last resort
+        if ($envApiKey = Environment::getEnv('SS_AKISMET_API_KEY')) {
+            return $envApiKey;
         }
+
+        return '';
     }
     
     /**
-     * Retrieves Akismet API object singleton, or null if not configured
-     * 
-     * @return AkismetService
+     * Retrieves Akismet API object, or null if not configured
+     *
+     * @return AkismetService|null
      */
-    public static function api()
+    public function getService()
     {
         // Get API key and URL
-        $key = self::get_api_key();
+        $key = $this->getApiKey();
         if (empty($key)) {
             user_error("AkismetSpamProtector is incorrectly configured. Please specify an API key.", E_USER_WARNING);
             return null;
@@ -113,7 +131,7 @@ class AkismetSpamProtector implements SpamProtector
         $url = Director::protocolAndHost();
         
         // Generate API object
-        return Injector::inst()->get('AkismetService', true, array($key, $url));
+        return Injector::inst()->get(AkismetService::class, false, array($key, $url));
     }
     
     public function getFormField($name = null, $title = null, $value = null, $form = null, $rightTitle = null)

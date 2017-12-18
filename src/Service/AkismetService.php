@@ -1,5 +1,7 @@
 <?php
 
+namespace SilverStripe\Akismet\Service;
+
 /**
  * Describes TijsVerkoyen\Akismet\Akismet
  */

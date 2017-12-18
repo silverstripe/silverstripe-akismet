@@ -1,5 +1,17 @@
 <?php
 
+namespace SilverStripe\Akismet;
+
+use SilverStripe\Akismet\Service\AkismetService;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Forms\CheckboxField;
+use SilverStripe\Forms\Validator;
+use SilverStripe\ORM\ValidationResult;
+use SilverStripe\Security\Permission;
+use SilverStripe\ORM\DataObjectInterface;
+use SilverStripe\Forms\FormField;
+use SilverStripe\Security\Security;
+
 /**
  * Form field to handle akismet error display and handling
  *
@@ -21,13 +33,13 @@ class AkismetField extends FormField
     
     /**
      * Get the nested confirmation checkbox field
-     * 
+     *
      * @return CheckboxField
      */
     protected function confirmationField()
     {
         // Check if confirmation is required
-        $requireConfirmation = Config::inst()->get('AkismetSpamProtector', 'require_confirmation');
+        $requireConfirmation = Config::inst()->get(AkismetSpamProtector::class, 'require_confirmation');
         if (empty($requireConfirmation)) {
             return null;
         }
@@ -78,25 +90,23 @@ class AkismetField extends FormField
     }
     
     /**
-     * This function first gets values from mapped fields and then check these values against
-     * Mollom web service and then notify callback object with the spam checking result.
+     * This function first gets values from mapped fields and then checks these values against
+     * akismet and then notifies callback object with the spam checking result.
      * @param Validator $validator
-     * @return 	boolean		- true when Mollom confirms that the submission is ham (not spam)
-     *						- false when Mollom confirms that the submission is spam 
-     * 						- false when Mollom say 'unsure'. 
-     *						  In this case, 'mollom_captcha_requested' session is set to true 
-     *       				  so that Field() knows it's time to display captcha 			
+     * @return  boolean     - True when akismet confirms that the submission is ham (not spam) or should be saved
+     *                      - False when akismet confirms that the submission is spam or permission was not given to
+     *                        check for spam
      */
     public function validate($validator)
     {
         
         // Check that, if necessary, the user has given permission to check for spam
-        $requireConfirmation = Config::inst()->get('AkismetSpamProtector', 'require_confirmation');
+        $requireConfirmation = Config::inst()->get(AkismetSpamProtector::class, 'require_confirmation');
         if ($requireConfirmation && !$this->Value()) {
             $validator->validationError(
                 $this->name,
                 _t(
-                    'AkismetField.NOTIFICATIONREQUIRED',
+                    __CLASS__ . '.NOTIFICATIONREQUIRED',
                     'You must give consent to submit this content to spam detection'
                 ),
                 "error"
@@ -112,12 +122,12 @@ class AkismetField extends FormField
 
         // Save error message
         $errorMessage = _t(
-            'AkismetField.SPAM',
+            __CLASS__ . '.SPAM',
             "Your submission has been rejected because it was treated as spam."
         );
 
         // If spam should be allowed, let it pass and save it for later
-        if (Config::inst()->get('AkismetSpamProtector', 'save_spam')) {
+        if (Config::inst()->get(AkismetSpamProtector::class, 'save_spam')) {
             // In order to save spam but still display the spam message, we must mock a form message
             // without failing the validation
             $errors = array(array(
@@ -126,7 +136,9 @@ class AkismetField extends FormField
                 'messageType' => 'error',
             ));
             $formName = $this->getForm()->FormName();
-            Session::set("FormInfo.{$formName}.errors", $errors);
+
+            $this->getForm()->sessionMessage($errorMessage, ValidationResult::TYPE_GOOD);
+
             return true;
         } else {
             // Mark as spam
@@ -148,14 +160,14 @@ class AkismetField extends FormField
         }
 
         // Check bypass permission
-        $permission = Config::inst()->get('AkismetSpamProtector', 'bypass_permission');
+        $permission = Config::inst()->get(AkismetSpamProtector::class, 'bypass_permission');
         if ($permission && Permission::check($permission)) {
             return false;
         }
 
         // if the user has logged and there's no force check on member
-        $bypassMember = Config::inst()->get('AkismetSpamProtector', 'bypass_members');
-        if ($bypassMember && Member::currentUser()) {
+        $bypassMember = Config::inst()->get(AkismetSpamProtector::class, 'bypass_members');
+        if ($bypassMember && Security::getCurrentUser()) {
             return false;
         }
 
@@ -167,7 +179,8 @@ class AkismetField extends FormField
         $url = isset($mappedData['authorUrl']) ? $mappedData['authorUrl'] : null;
 
         // Check result
-        $api = AkismetSpamProtector::api();
+        /** @var AkismetService $api */
+        $api = AkismetSpamProtector::singleton()->getService();
         $this->isSpam = $api && $api->isSpam($content, $author, $email, $url);
         return $this->isSpam;
     }
@@ -201,11 +214,11 @@ class AkismetField extends FormField
     /**
      * Allow spam flag to be saved to the underlying data record
      *
-     * @param \DataObjectInterface $record
+     * @param DataObjectInterface $record
      */
-    public function saveInto(\DataObjectInterface $record)
+    public function saveInto(DataObjectInterface $record)
     {
-        if (Config::inst()->get('AkismetSpamProtector', 'save_spam')) {
+        if (Config::inst()->get(AkismetSpamProtector::class, 'save_spam')) {
             $dataValue = $this->getIsSpam() ? 1 : 0;
             $record->setCastedField($this->name, $dataValue);
         }

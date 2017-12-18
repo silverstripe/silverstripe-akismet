@@ -1,0 +1,7 @@
+mappings:
+  AkismetConfig: SilverStripe\Akismet\Config\AkismetConfig
+  AkismetProcessor: SilverStripe\Akismet\Config\AkismetProcessor
+  AkismetService: SilverStripe\Akismet\Service\AkismetService
+  AkismetServiceBackend: SilverStripe\Akismet\Service\AkismetServiceBackend
+  AkismetField: SilverStripe\Akismet\AkismetField
+  AkismetSpamProtector: SilverStripe\Akismet\AkismetSpamProtector
