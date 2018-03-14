@@ -10,6 +10,8 @@ use SilverStripe\Akismet\Service\AkismetService;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\ORM\DB;
 use SilverStripe\Dev\FunctionalTest;
+use SilverStripe\ORM\Connect\DatabaseException;
+use SilverStripe\ORM\DataObject;
 
 class AkismetTest extends FunctionalTest
 {
@@ -45,7 +47,6 @@ class AkismetTest extends FunctionalTest
 
     public function testSpamDetectionForm()
     {
-        
         // Test "nice" setting
         $result = $this->post('AkismetTestController/Form', array(
             'Name' => 'person',
@@ -136,8 +137,13 @@ class AkismetTest extends FunctionalTest
         $processor = new AkismetTestTestMiddleware();
         $this->assertTrue($processor->publicIsDBReady());
 
-        // Remove AkismetKey field
-        DB::query('ALTER TABLE "SiteConfig" DROP COLUMN "AkismetKey"');
+        try {
+            // Remove AkismetKey field
+            $siteconfigTable = DataObject::getSchema()->tableName(SiteConfig::class);
+            DB::query('ALTER TABLE "' . $siteconfigTable . '" DROP COLUMN "AkismetKey"');
+        } catch (DatabaseException $e) {
+            $this->markTestSkipped('Could not DROP database column');
+        }
         $this->assertFalse($processor->publicIsDBReady());
     }
 }
