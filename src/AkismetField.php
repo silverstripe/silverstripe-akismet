@@ -53,7 +53,7 @@ class AkismetField extends FormField
                 . 'a third party for automated spam detection'
             )
         )
-            ->setError($this->Message(), $this->MessageType())
+            ->setMessage($this->getMessage(), $this->getMessageType())
             ->setForm($this->getForm());
     }
     
