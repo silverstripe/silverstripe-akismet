@@ -1,0 +1,5 @@
+sv:
+  SilverStripe\Akismet\AkismetField:
+    NOTIFICATION: 'Jag förstår och ger samtycke till att detta innehåll skickas till  tredje part för automatisk spamhantering'
+    NOTIFICATIONREQUIRED: 'Du måste godkänna att innehållet skickas till spamdetektering'
+    SPAM: 'Ditt inlägg har nekats eftersom det behandlades som skräppost.'
