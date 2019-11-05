@@ -1,19 +1,25 @@
 language: php
 
+dist: xenial
+
+services:
+  - mysql
+  - postgresql
+
 env:
   global:
     - COMPOSER_ROOT_VERSION=4.x-dev
-    
+
 matrix:
   include:
-    - php: 5.6
-      env: DB=MYSQL PHPCS_TEST=1 PHPUNIT_TEST=1
-    - php: 7.0
+    - php: 7.1
       env: DB=MYSQL PHPUNIT_TEST=1
     - php: 7.1
-      env: DB=PGSQL PHPUNIT_COVERAGE_TEST=1
+      env: DB=PGSQL PHPUNIT_TEST=1
     - php: 7.2
-      env: DB=MYSQL PHPUNIT_TEST=1
+      env: DB=MYSQL PHPUNIT_TEST=1 PHPCS_TEST=1
+    - php: 7.3
+      env: DB=MYSQL PHPUNIT_COVERAGE_TEST=1
 
 before_script:
   # Init PHP
@@ -22,9 +28,9 @@ before_script:
 
   # Install composer dependencies
   - composer validate
-  - composer require --no-update silverstripe/recipe-cms:1.0.x-dev
-  - if [[ $DB == PGSQL ]]; then composer require --no-update silverstripe/postgresql 2.0.x-dev; fi
-  - composer install --prefer-dist --no-interaction --no-progress --no-suggest --optimize-autoloader --verbose --profile
+  - composer require --no-update silverstripe/recipe-cms:^4
+  - if [[ $DB == PGSQL ]]; then composer require --no-update silverstripe/postgresql:^2; fi
+  - composer install --prefer-source --no-interaction --no-progress --no-suggest --optimize-autoloader --verbose --profile
 
 script:
   - if [[ $PHPUNIT_TEST ]]; then vendor/bin/phpunit; fi

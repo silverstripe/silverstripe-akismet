@@ -28,11 +28,6 @@
             "SilverStripe\\Akismet\\Tests\\": "tests"
         }
     },
-	"extra": {
-		"branch-alias": {
-			"dev-master": "4.x-dev"
-		}
-	},
 	"minimum-stability": "dev",
 	"prefer-stable": true
 }
