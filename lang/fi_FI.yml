@@ -1,0 +1,5 @@
+fi_FI:
+  SilverStripe\Akismet\AkismetField:
+    NOTIFICATION: 'Ymmärrän, että tämä sisältö toimitetaan kolmannelle osapuolelle automaattista roskapostisuodatusta varten'
+    NOTIFICATIONREQUIRED: 'Sinun on annettava suostumuksesi tämän sisällön toimittamiseksi automaattiseen roskapostitunnistukseen'
+    SPAM: 'Lähetys hylättiin, koska se käsiteltiin roskapostina.'
