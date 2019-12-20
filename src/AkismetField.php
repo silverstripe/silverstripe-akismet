@@ -2,8 +2,11 @@
 
 namespace SilverStripe\Akismet;
 
+use Exception;
+use Psr\Log\LoggerInterface;
 use SilverStripe\Akismet\Service\AkismetService;
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\Validator;
 use SilverStripe\ORM\ValidationResult;
@@ -21,6 +24,13 @@ use SilverStripe\Security\Security;
 class AkismetField extends FormField
 {
     /**
+     * If the Akismet network response fails, it is neither true or false
+     * This is the value assigned on a 400
+     *
+     * @var boolean
+     */
+    private static $is_spam_when_response_fails = false;
+    /**
      * @var array
      */
     private $fieldMapping = array();
@@ -30,7 +40,7 @@ class AkismetField extends FormField
      * @var boolean
      */
     protected $isSpam = null;
-    
+
     /**
      * Get the nested confirmation checkbox field
      *
@@ -43,7 +53,7 @@ class AkismetField extends FormField
         if (empty($requireConfirmation)) {
             return null;
         }
-        
+
         // If confirmation is required then return a checkbox
         return CheckboxField::create(
             $this->getName(),
@@ -56,7 +66,7 @@ class AkismetField extends FormField
             ->setMessage($this->getMessage(), $this->getMessageType())
             ->setForm($this->getForm());
     }
-    
+
     public function Field($properties = array())
     {
         $checkbox = $this->confirmationField();
@@ -64,7 +74,7 @@ class AkismetField extends FormField
             return $checkbox->Field($properties);
         }
     }
-    
+
     public function FieldHolder($properties = array())
     {
         $checkbox = $this->confirmationField();
@@ -72,7 +82,7 @@ class AkismetField extends FormField
             return $checkbox->FieldHolder($properties);
         }
     }
-    
+
     /**
      * @return array
      */
@@ -81,7 +91,7 @@ class AkismetField extends FormField
         if (empty($this->fieldMapping)) {
             return null;
         }
-        
+
         $result = array();
         $data = $this->form->getData();
 
@@ -91,7 +101,7 @@ class AkismetField extends FormField
 
         return $result;
     }
-    
+
     /**
      * This function first gets values from mapped fields and then checks these values against
      * akismet and then notifies callback object with the spam checking result.
@@ -102,7 +112,7 @@ class AkismetField extends FormField
      */
     public function validate($validator)
     {
-        
+
         // Check that, if necessary, the user has given permission to check for spam
         $requireConfirmation = Config::inst()->get(AkismetSpamProtector::class, 'require_confirmation');
         if ($requireConfirmation && !$this->Value()) {
@@ -116,7 +126,7 @@ class AkismetField extends FormField
             );
             return false;
         }
-        
+
         // Check result
         $isSpam = $this->getIsSpam();
         if (!$isSpam) {
@@ -184,10 +194,28 @@ class AkismetField extends FormField
         // Check result
         /** @var AkismetService $api */
         $api = AkismetSpamProtector::singleton()->getService();
-        $this->isSpam = $api && $api->isSpam($content, $author, $email, $url);
+        $this->isSpam = false;
+        try {
+            $this->isSpam = $api && $api->isSpam($content, $author, $email, $url);
+        } catch (Exception $e) {
+            //if the network response fails, it still needs to be true/false
+            $this->isSpam = (bool) $this->config()->is_spam_when_response_fails;
+            $errorMessage = sprintf(
+                "%s: %s",
+                $e->getMessage(),
+                _t(
+                    __CLASS__ . '.SPAM',
+                    "Your submission has been rejected because it was treated as spam."
+                )
+            );
+            Injector::inst()
+                ->get(LoggerInterface::class)
+                ->error($errorMessage);
+        }
+
         return $this->isSpam;
     }
-    
+
     /**
      * Get the fields to map spam protection too
      *
