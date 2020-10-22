@@ -20,7 +20,7 @@ matrix:
       env: DB=PGSQL PHPUNIT_TEST=1 RECIPE_VERSION="^4 --prefer-lowest"
     - php: 7.2
       env: DB=MYSQL PHPUNIT_TEST=1 PHPCS_TEST=1 RECIPE_VERSION="^4"
-    - php: 7.3
+    - php: 7.4
       env: DB=MYSQL PHPUNIT_COVERAGE_TEST=1 RECIPE_VERSION="4.x-dev"
 
 before_script:
@@ -32,6 +32,8 @@ before_script:
   - composer validate
   - composer require --no-update silverstripe/recipe-cms:$RECIPE_VERSION
   - if [[ $DB == PGSQL ]]; then composer require --no-update silverstripe/postgresql:^2; fi
+  # Fix for running phpunit 5 on php 7.4+
+  - composer require --no-update sminnee/phpunit-mock-objects:^3
   - composer install --prefer-dist --no-interaction --no-progress --no-suggest --optimize-autoloader --verbose --profile
 
 script:
