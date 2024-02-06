@@ -1,0 +1,5 @@
+sk:
+  SilverStripe\Akismet\AkismetField:
+    NOTIFICATION: 'Rozumiem tomu a dávam súhlas s odosielaním tohto obsahu tretej strane na automatickú detekciu spamu'
+    NOTIFICATIONREQUIRED: 'Na odosielanie tohto obsahu na detekciu spamu musíte dať súhlas'
+    SPAM: 'Váš príspevok bol odmietnutý, pretože je považovaný za spam.'
