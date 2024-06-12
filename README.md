@@ -161,4 +161,3 @@ _config.php
 ```php
 Config::modify()->set(AkismetSpamProtector::class, 'require_confirmation', true);
 ```
-
