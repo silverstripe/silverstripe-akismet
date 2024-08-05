@@ -1,7 +1,5 @@
 # Akismet Silverstripe Module
 
-__NOTE__: This module is no longer commercially supported in Silverstripe CMS 5 and it does not provide a CMS5-compatible version. The parent library is outdated and there are better alternatives like [UndefinedOffset/silverstripe-nocaptcha](https://packagist.org/packages/undefinedoffset/silverstripe-nocaptcha).
-
 [![CI](https://github.com/silverstripe/silverstripe-akismet/actions/workflows/ci.yml/badge.svg)](https://github.com/silverstripe/silverstripe-akismet/actions/workflows/ci.yml)
 
 Simple spam filter for Silverstripe using Akismet
@@ -18,12 +16,11 @@ Please see [the changelog](changelog.md) for module history.
 
 ## Requirements
 
- * Silverstripe 4.0+
+ * Silverstripe ^4 || ^5
  * Silverstripe SpamProtection module - <https://github.com/silverstripe/silverstripe-spamprotection>
  * Tijs Verkoyen's Akismet API wrapper - <https://github.com/tijsverkoyen/Akismet>
- * PHP 5.6 or higher
 
- **Note:** For a Silverstripe 3.x compatible version, please use [the 1.x release line](https://github.com/silverstripe/silverstripe-mimevalidator/tree/1.0).
+ **Note:** For a Silverstripe 4.x compatible version, please use 4.x release.
 
 ## Installation Instructions
 
@@ -32,7 +29,7 @@ This module can be easily installed on any already-developed website
  * You can install using Composer, as below:
 
 ```bash
-composer require silverstripe/akismet ^4.0
+composer require silverstripe/akismet
 ```
 
 `AkismetSpamProtector` is automatically assigned as the default spam protector class.
