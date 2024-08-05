@@ -70,11 +70,11 @@ class AkismetSpamProtector implements SpamProtector
      * @config
      */
     private static $save_spam = false;
-    
+
     /**
      * @var array
      */
-    private $fieldMapping = array();
+    private $fieldMapping = [];
 
     /**
      * Set the API key
@@ -87,7 +87,7 @@ class AkismetSpamProtector implements SpamProtector
         $this->apiKey = $key;
         return $this;
     }
-    
+
     /**
      * Get the API key. Priority is given first to explicitly set values on a singleton, then to configuration values
      * and finally to environment values.
@@ -106,7 +106,7 @@ class AkismetSpamProtector implements SpamProtector
         if (!empty($key)) {
             return $key;
         }
-        
+
         // Check environment as last resort
         if ($envApiKey = Environment::getEnv('SS_AKISMET_API_KEY')) {
             return $envApiKey;
@@ -114,7 +114,7 @@ class AkismetSpamProtector implements SpamProtector
 
         return '';
     }
-    
+
     /**
      * Retrieves Akismet API object, or null if not configured
      *
@@ -124,16 +124,16 @@ class AkismetSpamProtector implements SpamProtector
     {
         // Get API key and URL
         $key = $this->getApiKey();
+
         if (empty($key)) {
             user_error("AkismetSpamProtector is incorrectly configured. Please specify an API key.", E_USER_WARNING);
             return null;
         }
-        $url = Director::protocolAndHost();
-        
+
         // Generate API object
-        return Injector::inst()->get(AkismetService::class, false, array($key, $url));
+        return Injector::inst()->get(AkismetService::class, false, [$key]);
     }
-    
+
     public function getFormField($name = null, $title = null, $value = null, $form = null, $rightTitle = null)
     {
         return AkismetField::create($name, $title, $value, $form, $rightTitle)

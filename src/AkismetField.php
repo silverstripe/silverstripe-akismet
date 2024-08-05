@@ -33,7 +33,7 @@ class AkismetField extends FormField
     /**
      * @var array
      */
-    private $fieldMapping = array();
+    private $fieldMapping = [];
 
     /**
      *
@@ -67,7 +67,8 @@ class AkismetField extends FormField
             ->setForm($this->getForm());
     }
 
-    public function Field($properties = array())
+
+    public function Field($properties = [])
     {
         $checkbox = $this->confirmationField();
         if ($checkbox) {
@@ -75,7 +76,8 @@ class AkismetField extends FormField
         }
     }
 
-    public function FieldHolder($properties = array())
+
+    public function FieldHolder($properties = [])
     {
         $checkbox = $this->confirmationField();
         if ($checkbox) {
@@ -92,7 +94,7 @@ class AkismetField extends FormField
             return null;
         }
 
-        $result = array();
+        $result = [];
         $data = $this->form->getData();
 
         foreach ($this->fieldMapping as $fieldName => $mappedName) {
@@ -143,11 +145,12 @@ class AkismetField extends FormField
         if (Config::inst()->get(AkismetSpamProtector::class, 'save_spam')) {
             // In order to save spam but still display the spam message, we must mock a form message
             // without failing the validation
-            $errors = array(array(
+            $errors = [[
                 'fieldName' => $this->name,
                 'message' => $errorMessage,
                 'messageType' => 'error',
-            ));
+            ]];
+
             $formName = $this->getForm()->FormName();
 
             $this->getForm()->sessionMessage($errorMessage, ValidationResult::TYPE_GOOD);

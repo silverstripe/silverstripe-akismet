@@ -11,9 +11,9 @@ use SilverStripe\ORM\DataExtension;
  */
 class AkismetConfig extends DataExtension
 {
-    private static $db = array(
+    private static $db = [
         'AkismetKey' => 'Varchar'
-    );
+    ];
 
     public function updateCMSFields(FieldList $fields)
     {

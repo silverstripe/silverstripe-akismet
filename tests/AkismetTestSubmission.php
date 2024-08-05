@@ -7,12 +7,12 @@ use SilverStripe\Dev\TestOnly;
 
 class AkismetTestSubmission extends DataObject implements TestOnly
 {
-    private static $db = array(
+    private static $db = [
         'Name' => 'Varchar',
         'Email' => 'Varchar',
         'Content' => 'Text',
         'IsSpam' => 'Boolean',
-    );
+    ];
 
     private static $default_sort = 'ID';
 }
